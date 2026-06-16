@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using Emgu.CV;
+using Emgu.CV.Structure;
 
 namespace ObjectRecognitionSystem.Services;
 
@@ -26,8 +27,9 @@ public class CameraService : IDisposable
                 using var frame = _capture.QueryFrame();
                 if (frame == null) return;
 
+                using var image = frame.ToImage<Bgr, byte>();
                 var oldImage = _previewBox.Image;
-                _previewBox.Image = frame.ToBitmap();
+                _previewBox.Image = image.ToBitmap();
                 oldImage?.Dispose();
             }
             catch
@@ -42,7 +44,10 @@ public class CameraService : IDisposable
         if (_capture == null) return null;
 
         using var frame = _capture.QueryFrame();
-        return frame?.ToBitmap();
+        if (frame == null) return null;
+
+        using var image = frame.ToImage<Bgr, byte>();
+        return image.ToBitmap();
     }
 
     public void StopCamera()

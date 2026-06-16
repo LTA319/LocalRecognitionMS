@@ -1,6 +1,7 @@
-using System.Drawing;
+using SkiaSharp;
 using ObjectRecognitionSystem.Models;
 using YoloDotNet;
+using YoloDotNet.Enums;
 using YoloDotNet.Models;
 
 namespace ObjectRecognitionSystem.Services;
@@ -25,29 +26,31 @@ public class DetectionService : IDisposable
 
     public void WarmUp()
     {
-        using var dummy = new Bitmap(640, 640);
-        using var g = Graphics.FromImage(dummy);
-        g.Clear(Color.Black);
-        _yolo.Detect(dummy);
+        using var surface = SKSurface.Create(new SKImageInfo(640, 640));
+        var image = surface.Snapshot();
+        _yolo.RunObjectDetection(image, _confidenceThreshold, 0.5);
     }
 
     public Task<List<DetectionResult>> DetectAsync(Bitmap image)
     {
         return Task.Run(() =>
         {
-            var results = _yolo.Detect(image)
-                .Where(d => d.Confidence >= _confidenceThreshold)
-                .OrderByDescending(d => d.Confidence)
+            using var ms = new MemoryStream();
+            image.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+            ms.Position = 0;
+            using var skImage = SKImage.FromEncodedData(ms);
+
+            var results = _yolo.RunObjectDetection(skImage, _confidenceThreshold, 0.5);
+            return results
                 .Select(d => new DetectionResult
                 {
-                    Name = d.Name,
+                    Name = d.Label.Name,
                     Confidence = d.Confidence,
                     BoundingBox = new Rectangle(
-                        d.BoundingBox.X, d.BoundingBox.Y,
+                        d.BoundingBox.Left, d.BoundingBox.Top,
                         d.BoundingBox.Width, d.BoundingBox.Height)
                 })
                 .ToList();
-            return results;
         });
     }
 
