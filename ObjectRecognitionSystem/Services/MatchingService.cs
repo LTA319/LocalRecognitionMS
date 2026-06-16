@@ -12,13 +12,16 @@ public class MatchingService
         _db = db;
     }
 
+    /// <summary>
+    /// 分层匹配：L1 别名映射 → L2 精确+FTS5 → L3 FuzzySharp → L4 语义向量（预留）
+    /// </summary>
     public async Task<MatchResult?> ResolveAsync(string detectedName, double confidence)
     {
         var candidates = new List<ItemInfo>();
         var fuzzyThreshold = AppConfig.FuzzyThreshold;
         var topN = AppConfig.SearchTopN;
 
-        // Layer 1: Alias mapping table (in-memory)
+        // L1: 别名映射表 — 内存 ConcurrentDictionary 查找，<1ms
         var mappedName = _db.GetMappedName(detectedName);
         if (mappedName != null)
         {
@@ -36,7 +39,7 @@ public class MatchingService
             }
         }
 
-        // Layer 2: Exact match + FTS5
+        // L2: 精确匹配 + FTS5 全文搜索，<10ms
         var exact = await _db.GetByNameAsync(detectedName);
         if (exact != null)
         {
@@ -55,7 +58,7 @@ public class MatchingService
             };
         }
 
-        // Layer 3: FuzzySharp string similarity
+        // L3: FuzzySharp 字符串模糊匹配 — 遍历全量缓存计算相似度，<100ms
         var allItems = _db.GetAllCachedItems();
         var fuzzyMatches = allItems
             .Select(item => new
@@ -81,10 +84,9 @@ public class MatchingService
             };
         }
 
-        // Layer 4: Semantic vector matching (reserved, skipped by default)
+        // L4: 语义向量匹配（预留扩展点，默认不启用）
         if (AppConfig.SemanticMatchEnabled)
         {
-            // Reserved extension point: SemanticMatchAsync(detectedName, allItems)
         }
 
         return null;

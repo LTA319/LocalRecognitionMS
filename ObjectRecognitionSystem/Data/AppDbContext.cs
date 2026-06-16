@@ -27,6 +27,10 @@ public class AppDbContext : DbContext
         });
     }
 
+    /// <summary>
+    /// 创建 FTS5 全文索引虚拟表及同步触发器。
+    /// EF Core 不直接支持 FTS5，因此通过 raw SQL 创建。
+    /// </summary>
     public void EnsureFts5Created()
     {
         Database.ExecuteSqlRaw(@"

@@ -14,7 +14,7 @@ public partial class MainForm : Form
     private readonly ILogger<MainForm> _logger;
 
     private System.Windows.Forms.Timer? _autoTimer;
-    private int _detecting;
+    private int _detecting; // 0=空闲, 1=识别中（Interlocked 防重入）
 
     public MainForm()
     {
@@ -25,6 +25,7 @@ public partial class MainForm : Form
 
         _database = new DatabaseService();
         _database.EnsureCreated();
+        // 同步等待缓存加载完成，确保进入主界面后匹配引擎可用
         _database.LoadCacheAsync().GetAwaiter().GetResult();
 
         _detection = new DetectionService();
@@ -46,6 +47,7 @@ public partial class MainForm : Form
 
     private async Task DoDetectAsync()
     {
+        // 防重入：上一次识别未完成时跳过本次触发
         if (Interlocked.CompareExchange(ref _detecting, 1, 0) != 0) return;
 
         try
@@ -61,7 +63,7 @@ public partial class MainForm : Form
             }
 
             var detections = await _detection.DetectAsync(frame);
-            frame.Dispose();
+            frame.Dispose(); // 推理完成后立即释放 Bitmap
 
             if (detections.Count == 0)
             {
@@ -111,6 +113,7 @@ public partial class MainForm : Form
 
     private void BindCandidates(List<ItemInfo> candidates)
     {
+        // 只有多个候选时才显示 DataGridView，单个匹配直接隐藏
         if (candidates.Count <= 1)
         {
             dgvCandidates.DataSource = null;

@@ -12,6 +12,7 @@ static class Program
 
         try
         {
+            // 启动前校验 ONNX 模型文件，避免进入主界面后才报错
             var modelPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, AppConfig.OnnxModelPath);
             if (!File.Exists(modelPath))
             {
@@ -21,6 +22,7 @@ static class Program
                 return;
             }
 
+            // 预热 ONNX Runtime：跑一次空图推理触发 JIT 编译，避免首次识别卡顿
             DetectionService? detection = null;
             try
             {

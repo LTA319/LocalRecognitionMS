@@ -27,14 +27,14 @@ public class CameraService : IDisposable
                 using var frame = _capture.QueryFrame();
                 if (frame == null) return;
 
+                // Emgu.CV Mat → Image<Bgr, byte> → Bitmap（两步转换，Emgu.CV.Bitmap 提供 ToBitmap 扩展）
                 using var image = frame.ToImage<Bgr, byte>();
                 var oldImage = _previewBox.Image;
                 _previewBox.Image = image.ToBitmap();
-                oldImage?.Dispose();
+                oldImage?.Dispose(); // 释放上一帧 Bitmap，防止 GDI+ 内存泄漏
             }
             catch
             {
-                // Silently skip dropped frames
             }
         }, null, 0, interval);
     }
@@ -46,6 +46,7 @@ public class CameraService : IDisposable
         using var frame = _capture.QueryFrame();
         if (frame == null) return null;
 
+        // Emgu.CV Mat → Image<Bgr, byte> → Bitmap
         using var image = frame.ToImage<Bgr, byte>();
         return image.ToBitmap();
     }

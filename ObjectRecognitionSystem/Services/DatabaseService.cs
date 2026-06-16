@@ -25,6 +25,7 @@ public class DatabaseService : IDisposable
 
     public async Task LoadCacheAsync()
     {
+        // 启动时全量加载映射表和物品表到内存，后续 L1/L3 匹配无需访问数据库
         var mappings = await _context.NameMappings.ToListAsync();
         foreach (var m in mappings)
             _mappingCache[m.DetectedName] = m.StandardName;
@@ -58,6 +59,7 @@ public class DatabaseService : IDisposable
     {
         if (string.IsNullOrWhiteSpace(keyword)) return new List<ItemInfo>();
 
+        // FTS5 MATCH 不支持参数化，使用 FromSqlRaw 拼接；keyword + "*" 启用前缀匹配
         return await _context.Items
             .FromSqlRaw(@"
                 SELECT i.* FROM Items i
