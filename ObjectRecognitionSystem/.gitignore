@@ -13,6 +13,12 @@ obj/
 # NuGet 包
 packages/
 
+# SQLite 运行时数据库文件
+*.db
+
+# 日志文件
+logs/
+
 # 其他常见忽略项
 *.log
 *.cache
