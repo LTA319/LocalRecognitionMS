@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ObjectRecognitionSystem")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+086647f4551db8d5269b93b8fe853e40bb0b90e9")]
 [assembly: System.Reflection.AssemblyProductAttribute("ObjectRecognitionSystem")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ObjectRecognitionSystem")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
