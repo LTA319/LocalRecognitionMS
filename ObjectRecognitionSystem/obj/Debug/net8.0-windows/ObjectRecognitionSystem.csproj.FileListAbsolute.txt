@@ -1,0 +1,5 @@
+D:\work\MES\AiXinhdMS\ObjectRecognitionSystem\obj\Debug\net8.0-windows\ObjectRecognitionSystem.csproj.AssemblyReference.cache
+D:\work\MES\AiXinhdMS\ObjectRecognitionSystem\obj\Debug\net8.0-windows\ObjectRecognitionSystem.GeneratedMSBuildEditorConfig.editorconfig
+D:\work\MES\AiXinhdMS\ObjectRecognitionSystem\obj\Debug\net8.0-windows\ObjectRecognitionSystem.AssemblyInfoInputs.cache
+D:\work\MES\AiXinhdMS\ObjectRecognitionSystem\obj\Debug\net8.0-windows\ObjectRecognitionSystem.AssemblyInfo.cs
+D:\work\MES\AiXinhdMS\ObjectRecognitionSystem\obj\Debug\net8.0-windows\ObjectRecognitionSystem.csproj.CoreCompileInputs.cache
